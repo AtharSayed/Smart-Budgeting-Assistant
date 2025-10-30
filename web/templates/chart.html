@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Budget Overview</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<div class="container">
+  <h1>Monthly Spending vs Budget</h1>
+  <canvas id="budgetChart"></canvas>
+  <a href="{{ url_for('index') }}">Back to Chat</a>
+</div>
+
+<script>
+const summary = {{ summary|tojson }};
+const labels = Object.keys(summary);
+const spent = labels.map(k => summary[k].spent);
+const budget = labels.map(k => summary[k].budget);
+
+new Chart(document.getElementById('budgetChart'), {
+  type: 'bar',
+  data: {
+    labels: labels,
+    datasets: [
+      { label: 'Spent', data: spent, backgroundColor: '#e74c3c' },
+      { label: 'Budget', data: budget, backgroundColor: '#2ecc71' }
+    ]
+  },
+  options: { responsive: true, scales: { y: { beginAtZero: true } } }
+});
+</script>
+</body>
+</html>

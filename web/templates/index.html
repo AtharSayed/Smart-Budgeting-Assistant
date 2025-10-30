@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Smart Budget Assistant</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<div class="container">
+  <h1>Smart Budget Assistant</h1>
+
+  <div id="chat">
+    {% for turn in history %}
+      <div class="user">{{ turn.user }}</div>
+      <div class="assistant">{{ turn.assistant }}</div>
+    {% endfor %}
+  </div>
+
+  <form method="post" id="msgform">
+    <input type="text" name="message" placeholder="Ask about your budget..." autocomplete="off" required autofocus>
+    <button type="submit">Send</button>
+  </form>
+
+  <div class="links">
+    <a href="{{ url_for('chart') }}">View Charts</a> |
+    <a href="{{ url_for('upload') }}">Upload CSV</a>
+  </div>
+</div>
+</body>
+</html>

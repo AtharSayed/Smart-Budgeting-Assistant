@@ -1,0 +1,9 @@
+fastapi
+uvicorn
+sqlmodel
+pydantic
+httpx
+pandas
+python-dotenv
+flask
+python-dateutil
