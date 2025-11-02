@@ -29,12 +29,6 @@ smart-budget-assistant/
 ├── data/                         # Runtime DB (git-ignore)
 │   └── budget.db                 # SQLite file
 │
-├── tests/                        # Unit & integration tests
-│   ├── __init__.py
-│   ├── test_categorizer.py
-│   ├── test_context.py
-│   └── test_llm.py
-│
 ├── Dockerfile
 ├── docker-compose.yml
 ├── requirements.txt
