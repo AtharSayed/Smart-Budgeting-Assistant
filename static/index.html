@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Smart Budget Assistant</title>
+  <link rel="stylesheet" href="/static/style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Smart Budget Assistant</h1>
+    </header>
+
+    <div id="chart-container">
+      <canvas id="budgetChart"></canvas>
+    </div>
+
+    <div id="chat"></div>
+
+    <form id="msgform">
+      <input type="text" id="userInput" placeholder="Can I get coffee?" autocomplete="off" required />
+      <button type="submit">Ask</button>
+    </form>
+  </div>
+
+  <script>
+    let chart = null;
+
+    // Add message to chat
+    function addMessage(text, sender) {
+      const msg = document.createElement('div');
+      msg.className = `message ${sender}`;
+      msg.textContent = text;
+      document.getElementById('chat').appendChild(msg);
+      msg.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // Update Chart
+    function updateChart(data) {
+      const ctx = document.getElementById('budgetChart').getContext('2d');
+      const spent = data.spent || { needs: 0, wants: 0, savings: 0 };
+      const labels = ['Needs', 'Wants', 'Savings'];
+      const values = [spent.needs, spent.wants, spent.savings];
+
+      if (chart) chart.destroy();
+
+      chart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          labels: labels,
+          datasets: [{
+            data: values,
+            backgroundColor: ['#e74c3c', '#f1c40f', '#2ecc71'],
+            borderWidth: 2,
+            borderColor: '#fff'
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: { position: 'bottom', labels: { font: { size: 14 } } },
+            tooltip: { callbacks: { label: ctx => `${ctx.label}: $${ctx.parsed.toFixed(2)}` } }
+          }
+        }
+      });
+    }
+
+    // Form submit
+    document.getElementById('msgform').onsubmit = async (e) => {
+      e.preventDefault();
+      const input = document.getElementById('userInput');
+      const query = input.value.trim();
+      if (!query) return;
+
+      addMessage(query, 'user');
+      input.value = '';
+
+      try {
+        const res = await fetch('/ask', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ query })
+        });
+        const data = await res.json();
+        addMessage(data.response, 'assistant');
+        updateChart(data.budget_status);
+      } catch (err) {
+        addMessage('Error: Could not reach server.', 'assistant');
+      }
+    };
+
+    // Load initial summary
+    fetch('/summary')
+      .then(r => r.json())
+      .then(d => updateChart(d['50_30_20']))
+      .catch(() => addMessage('Warning: Could not load budget summary.', 'assistant'));
+  </script>
+</body>
+</html>

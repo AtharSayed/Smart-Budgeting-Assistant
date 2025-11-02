@@ -1,9 +1,8 @@
-# app/database.py
 from sqlmodel import SQLModel, create_engine, Session
 import os
 
-# Ensure directory exists
-DATA_DIR = "/code/app/data"
+# DATA_DIR = "/code/app/data" For containerized environment
+DATA_DIR = r"E:\Technical-Seminar-II Project\Smart-Budgeting-Agent\data"  # For local Build process
 os.makedirs(DATA_DIR, exist_ok=True)
 
 DATABASE_URL = f"sqlite:///{DATA_DIR}/budget.db"

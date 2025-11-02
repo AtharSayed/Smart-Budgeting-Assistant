@@ -1,32 +1,26 @@
-#!/bin/bash
-# scripts/start-ollama.sh
-
+#!/bin/sh
 set -e
 
-echo "Starting Ollama server..."
+echo "Starting Ollama (CPU)..."
 ollama serve &
-SERVER_PID=$!
+PID=$!
 
-# Give server time to boot
-sleep 5
+sleep 30
 
-echo "Waiting for Ollama API to be ready..."
-for i in {1..30}; do
-    if curl -s http://localhost:11434/api/tags > /dev/null 2>&1; then
-        echo "Ollama API is up!"
-        break
-    fi
-    echo "Attempt $i/30: Waiting for API..."
-    sleep 3
+echo "Waiting for /api/tags..."
+while ! wget -q --spider http://localhost:11434/api/tags 2>/dev/null; do
+    echo "Waiting... (10s)"
+    sleep 10
 done
 
-# Pull model if not exists
+echo "Ollama API IS LIVE!"
+
 if ! ollama list | grep -q "mistral"; then
-    echo "Pulling mistral model (~4.1GB)..."
+    echo "Pulling mistral..."
     ollama pull mistral
 else
-    echo "Mistral already installed"
+    echo "mistral ready"
 fi
 
-echo "Ollama is ready and serving!"
-wait $SERVER_PID
+echo "Ollama is READY!"
+wait $PID

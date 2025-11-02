@@ -1,5 +1,5 @@
 # ollama.Dockerfile
-FROM ollama/ollama
+FROM ollama/ollama:latest
 
 # INSTALL CURL FOR SCRIPT & HEALTHCHECK
 RUN apt-get update && \
